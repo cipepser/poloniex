@@ -37,12 +37,14 @@ func main() {
 		coins := strings.Split(string(l), "/")
 
 		fmt.Print(coins[1] + coins[0])
+		// fmt.Print(coins[0] + coins[1])
 
 		// fmt.Print("BTCZEC")
 
 		fmt.Print(" MyTradeHistory `json:\"")
 
 		fmt.Print(coins[1] + "_" + coins[0])
+		// fmt.Print(coins[0] + "_" + coins[1])
 		// fmt.Print("BTC_ZEC")
 
 		fmt.Println("\"`")

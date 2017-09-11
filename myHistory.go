@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -185,6 +186,24 @@ type MyTradeHistorys struct {
 	XMRZEC   MyTradeHistory `json:"XMR_ZEC"`
 	XMRNXT   MyTradeHistory `json:"XMR_NXT"`
 	XMRBCN   MyTradeHistory `json:"XMR_BCN"`
+	BTCSDC   MyTradeHistory `json:"BTC_SDC"`
+	BBR      MyTradeHistory `json:"BTC_BBR"`
+	BITS     MyTradeHistory `json:"BTC_BITS"`
+	C2       MyTradeHistory `json:"BTC_C2"`
+	CURE     MyTradeHistory `json:"BTC_CURE"`
+	HZ       MyTradeHistory `json:"BTC_HZ"`
+	IOC      MyTradeHistory `json:"BTC_IOC"`
+	MYR      MyTradeHistory `json:"BTC_MYR"`
+	NOBL     MyTradeHistory `json:"BTC_NOBL"`
+	NSR      MyTradeHistory `json:"BTC_NSR"`
+	QBK      MyTradeHistory `json:"BTC_QBK"`
+	QORA     MyTradeHistory `json:"BTC_QORA"`
+	QTL      MyTradeHistory `json:"BTC_QTL"`
+	RBY      MyTradeHistory `json:"BTC_RBY"`
+	SDC      MyTradeHistory `json:"BTC_SDC"`
+	UNITY    MyTradeHistory `json:"BTC_UNITY"`
+	VOX      MyTradeHistory `json:"BTC_VOX"`
+	XMG      MyTradeHistory `json:"BTC_XMG"`
 }
 
 // GetMyTradeHistory get your trade history by poloniex api.
@@ -203,9 +222,6 @@ func (c *Client) GetMyTradeHistory(start, end string) (MyTradeHistorys, error) {
 	if err != nil {
 		return MyTradeHistorys{}, err
 	}
-
-	fmt.Println(strconv.FormatInt(s.Unix(), 10))
-	fmt.Println(strconv.FormatInt(e.Unix(), 10))
 
 	// set timeout timer by context package.
 	ctx, cancel := context.WithTimeout(context.Background(), timeout*time.Second)
@@ -268,13 +284,30 @@ func makeHMAC(msg, key string) string {
 func main() {
 	c, _ := NewClient(URL, nil)
 
-	start := "2017-05-18T15:00:00"
-	end := "2017-05-19T15:00:00"
+	start := "2015-10-01T13:33:55"
+	end := "2017-08-04T06:42:53"
 
 	h, err := c.GetMyTradeHistory(start, end)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(h)
+	// fmt.Println(h)
+
+	cnt := 0
+	v := reflect.Indirect(reflect.ValueOf(h))
+	t := v.Type()
+	for i := 0; i < t.NumField(); i++ {
+		f := v.Field(i)
+		if !f.IsNil() {
+			fmt.Println("-----", t.Field(i).Name, ":", f.Len(), "-----")
+			// fmt.Println(t.Field(i).Name, " ", f.Len())
+
+			for j := 0; j < f.Len(); j++ {
+				fmt.Println(f.Index(j).FieldByName("Date"), f.Index(j).FieldByName("Amount"))
+				cnt++
+			}
+		}
+	}
+	fmt.Println(cnt)
 }
